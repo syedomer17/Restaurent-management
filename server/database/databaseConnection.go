@@ -11,8 +11,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func DBinstance() *mongo.Client{
+func DBinstance() *mongo.Client {
 	MongoDB := os.Getenv("MONGODB")
+	if MongoDB == "" {
+		MongoDB = "mongodb://127.0.0.1:27017"
+	}
 
 	client, err := mongo.NewClient(options.Client().ApplyURI(MongoDB))
 
@@ -34,10 +37,16 @@ func DBinstance() *mongo.Client{
 	return client
 }
 
-var Client *mongo.Client = DBinstance() 
+var Client *mongo.Client = DBinstance()
 
 func OpenCollection(client *mongo.Client, collectionName string) *mongo.Collection {
-	var collection *mongo.Collection = client.Database(os.Getenv("DB_name")).Collection(collectionName)
+	dbName := os.Getenv("DB_Name")
+	if dbName == "" {
+		dbName = os.Getenv("DB_name")
+	}
+	if dbName == "" {
+		dbName = "restaurant_db"
+	}
 
-	return collection 
+	return client.Database(dbName).Collection(collectionName)
 }

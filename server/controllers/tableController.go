@@ -144,6 +144,19 @@ func UpdateTable() gin.HandlerFunc {
 
 func DeleteTable() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+		defer cancel()
 
+		tableID := c.Param("table_id")
+		result, err := tableCollection.DeleteOne(ctx, bson.M{"table_id": tableID})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete table"})
+			return
+		}
+		if result.DeletedCount == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Table not found"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"message": "Table deleted successfully"})
 	}
 }
