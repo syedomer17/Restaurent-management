@@ -75,9 +75,9 @@ func CreateMenu() gin.HandlerFunc {
 		}
 		err := menuCollection.FindOne(ctx, bson.M{"menu_id": menu.Menu_id}).Decode(&menu)
 
-		defer cancel() 
+		defer cancel()
 
-		if err != nil  {
+		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"error": "menu was not found",
 			})
@@ -88,7 +88,6 @@ func CreateMenu() gin.HandlerFunc {
 		menu.Updated_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 		menu.ID = primitive.NewObjectID()
 		menu.Menu_id = menu.ID.Hex()
-		
 
 		result, insertErr := menuCollection.InsertOne(ctx, menu)
 		if insertErr != nil {
@@ -175,7 +174,7 @@ func UpdateMenu() gin.HandlerFunc {
 			filter,
 			bson.D{
 				{
-					Key: "$set",
+					Key:   "$set",
 					Value: updateObj,
 				},
 			},
@@ -192,7 +191,7 @@ func UpdateMenu() gin.HandlerFunc {
 		c.JSON(http.StatusOK, result)
 	}
 }
-				
+
 func DeleteMenu() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
